@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Billing System</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+   
+    background-color: darkslategrey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: auto;
+
+  }
+  #container {
+    max-width: 600px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: bisque;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #080101;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  button {
+    padding: 15px 35px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <h1>Hotel Billing System</h1>
+  <button onclick="showMenu()">Show Menu</button>
+  <table id="menuTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>Sl No</th>
+        <th>Item Name</th>
+        <th>Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Idly</td>
+        <td>20</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Dosa</td>
+        <td>50</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Vada</td>
+        <td>30</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Poori</td>
+        <td>40</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Coffee</td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Water</td>
+        <td>20</td>
+      </tr>
+    </tbody>
+  </table>
+  <button onclick="collectData()">Collect Data</button>
+  <div id="billDiv" style="display: none;">
+    <h2>Bill Generated</h2>
+    <table id="billTable">
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Cost</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="billBody">
+      </tbody>
+    </table>
+    <div id="tipDiv">
+      <label for="tip">Enter Tip Amount:</label>
+      <input type="number" id="tip" min="0" step="any">
+      <button onclick="calculateBill()">Calculate Bill</button>
+    </div>
+    <div id="totalDiv"></div>
+  </div>
+</div>
+
+<script>
+  function showMenu() {
+    var menuTable = document.getElementById("menuTable");
+    menuTable.style.display = "block";
+  }
+
+  function collectData() {
+    var billDiv = document.getElementById("billDiv");
+    billDiv.style.display = "block";
+
+    var billBody = document.getElementById("billBody");
+    var billRow = "";
+
+    var ch;
+    do {
+      var slno = parseInt(prompt("Enter the item of your choice (Sl No):"));
+      var quantity = parseInt(prompt("Enter the quantity:"));
+
+      var itemName, cost, subTotal;
+
+      switch(slno) {
+        case 1:
+          itemName = "Idly";
+          cost = 20.0;
+          subTotal = cost * quantity;
+          break;
+        case 2:
+          itemName = "Dosa";
+          cost = 50.0;
+          subTotal = cost * quantity;
+          break;
+        case 3:
+          itemName = "Vada";
+          cost = 30.0;
+          subTotal = cost * quantity;
+          break;
+        case 4:
+          itemName = "Poori";
+          cost = 40.0;
+          subTotal = cost * quantity;
+          break;
+        case 5:
+          itemName = "Coffee";
+          cost = 10.0;
+          subTotal = cost * quantity;
+          break;
+        case 6:
+          itemName = "Water";
+          cost = 20.0;
+          subTotal = cost * quantity;
+          break;
+        default:
+          alert("Wrong item");
+          continue;
+      }
+
+      billRow += "<tr><td>" + itemName + "</td><td>" + cost + "</td><td>" + quantity + "</td><td>" + subTotal + "</td></tr>";
+      
+      do {
+        ch = prompt("Do you want to buy anything more? (y/n)").toLowerCase();
+        if (ch !== 'y' && ch !== 'n') {
+          alert("Please enter 'y' or 'n'");
+        }
+      } while (ch !== 'y' && ch !== 'n');
+    } while (ch === 'y');
+
+    billBody.innerHTML = billRow;
+  }
+
+  function calculateBill() {
+    var billTable = document.getElementById("billTable");
+    var billBody = document.getElementById("billBody");
+    var tipInput = document.getElementById("tip");
+    var totalDiv = document.getElementById("totalDiv");
+
+    var grandTotal = 0;
+    var tip = parseFloat(tipInput.value);
+
+    var rows = billBody.getElementsByTagName("tr");
+    for (var i = 0; i < rows.length; i++) {
+      var cells = rows[i].getElementsByTagName("td");
+      var cost = parseFloat(cells[1].innerText);
+      var quantity = parseFloat(cells[2].innerText);
+      var subTotal = cost * quantity;
+      grandTotal += subTotal;
+    }
+
+    var tipAmount = (tip / 100) * grandTotal;
+
+    var totalHtml = "<p>Total is: " + grandTotal + "</p>";
+    totalHtml += "<p>Tip amount is: " + tipAmount + "</p>";
+    totalHtml += "<p>Grand Total is: " + (grandTotal + tipAmount) + "</p>";
+
+    totalDiv.innerHTML = totalHtml;
+  }
+</script>
+</body>
+</html>
